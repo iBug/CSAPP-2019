@@ -1,4 +1,4 @@
-# CSAPP-2019
+# CSAPP-2019 [![Build Status](https://travis-ci.com/iBug/CSAPP-2019.svg?branch=master)](https://travis-ci.com/iBug/CSAPP-2019)
 
 My work for CSAPP 2019
 
