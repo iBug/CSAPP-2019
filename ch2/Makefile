@@ -1,4 +1,4 @@
-CODES = 2.27 2.30 2.36 2.42 2.61
+CODES = 2.27 2.30 2.36 2.42 2.61 2.63
 
 .PHONY: all %-test clean
 
@@ -14,4 +14,4 @@ clean:
 
 %-test: %.o %-test.o
 	${CC} -o ${TEST} $^
-	${TEST}
+	@${TEST}
