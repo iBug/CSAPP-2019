@@ -15,6 +15,5 @@ int main() {
     assert(sra(1234, 5) == (1234 >> 5));
     assert(sra(-12345, 6) == (-12345 >> 6));
 
-    puts("Test passed for 2.63");
     return 0;
 }

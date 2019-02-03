@@ -14,4 +14,4 @@ clean:
 
 %-test: %.o %-test.o
 	${CC} -o ${TEST} $^
-	@${TEST}
+	@${TEST} && echo "Test passed for $*"

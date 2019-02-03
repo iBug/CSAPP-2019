@@ -19,6 +19,5 @@ int main() {
     assert(tmult_ok(0x8001, 0xFFFF0000) == 0);
     assert(tmult_ok(0xFFFF8000, 0xFFFF0000) == 0);
     assert(tmult_ok(0xFFFF8001, 0xFFFF0000) == 1);
-    puts("Test passed for 2.36");
     return 0;
 }

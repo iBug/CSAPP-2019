@@ -16,6 +16,5 @@ int main() {
     assert(div16(8964) == 8964 / 16);
     assert(div16(-1) == -1 / 16);
     assert(div16(-2147483648) == -2147483648 / 16);
-    puts("Test passed for 2.42");
     return 0;
 }

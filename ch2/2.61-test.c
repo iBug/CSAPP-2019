@@ -29,6 +29,5 @@ int main() {
     assert(D(0) == 0);
     assert(D(0x00FFFFFF) == 0);
 
-    puts("Test passed for 2.61");
     return 0;
 }
