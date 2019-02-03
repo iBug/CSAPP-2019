@@ -4,7 +4,7 @@ CFLAGS := -Wall -std=c11
 TEST := ./test
 export
 
-.PHONY: all test
+.PHONY: all test clean
 
 all:
 	@for dir in ch*/; do \
@@ -16,4 +16,10 @@ test:
 	@for dir in ch*/; do \
 		echo "Running 'make test' in $$dir";\
 		make --no-print-directory -C $$dir test; \
+	done
+
+clean:
+	@for dir in ch*/; do \
+		echo "Running 'make clean' in $$dir";\
+		make --no-print-directory -C $$dir clean; \
 	done
