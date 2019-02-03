@@ -1,0 +1,12 @@
+---
+BasedOnStyle: Google
+AccessModifierOffset: 0
+AlignAfterOpenBracket: DontAlign
+#AlignEscapedNewlines: None
+AlignOperands: false
+AlignTrailingComments: false
+AlwaysBreakBeforeMultilineStrings: false
+ColumnLimit: 0
+IndentWidth: 4
+TabWidth: 4
+...

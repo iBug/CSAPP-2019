@@ -2,6 +2,10 @@
 *.o
 *.obj
 
+# Compiled binary
+*.out
+test
+
 # Swap files
 *.swp
 *.sw_

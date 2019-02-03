@@ -1,0 +1,8 @@
+sudo: false
+language: ruby
+ruby: 2.5
+dist: xenial
+
+script:
+  - make
+  - make test
