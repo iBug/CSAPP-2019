@@ -1,8 +1,8 @@
 .PHONY: all %-test clean
 
-all: 2.27.o 2.30.o
+all: 2.27.o 2.30.o 2.36.o
 
-test: 2.27-test 2.30-test
+test: 2.27-test 2.30-test 2.36-test
 
 clean:
 	rm -f test *.o
