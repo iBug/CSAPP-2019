@@ -1,4 +1,4 @@
-CODES = 2.27 2.30 2.36
+CODES = 2.27 2.30 2.36 2.42
 
 .PHONY: all %-test clean
 
