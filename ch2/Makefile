@@ -1,8 +1,10 @@
+CODES = 2.27 2.30 2.36
+
 .PHONY: all %-test clean
 
-all: 2.27.o 2.30.o 2.36.o
+all: $(patsubst %,%.o,${CODES})
 
-test: 2.27-test 2.30-test 2.36-test
+test: $(patsubst %,%-test,${CODES})
 
 clean:
 	rm -f test *.o
