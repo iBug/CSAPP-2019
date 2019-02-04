@@ -8,4 +8,6 @@ int tadd_ok(int x, int y) {
         return (x + y) < x;
     if (x > 0)
         return (x + y) > x;
+    // x == 0
+    return 1;
 }
