@@ -6,3 +6,5 @@ dist: xenial
 script:
   - make
   - make test
+  - make clean
+  - test -z "$(git status --porcelain)"
