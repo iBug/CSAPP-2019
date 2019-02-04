@@ -1,6 +1,6 @@
 CC := gcc
 CXX := g++
-CFLAGS := -Wall -std=c11
+CFLAGS := -g3 -fwrapv -Wall -std=c11
 TEST := ./test
 export
 

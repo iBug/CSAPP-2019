@@ -10,7 +10,7 @@ clean:
 	rm -f test *.o
 
 %.o: %.c
-	${CC} -c -o $@ $^
+	${CC} -c ${CFLAGS} -o $@ $^
 
 %-test: %.o %-test.o
 	${CC} -o ${TEST} $^
