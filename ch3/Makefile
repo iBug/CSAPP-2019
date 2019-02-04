@@ -1,8 +1,10 @@
+CODES := 
 
-
-.PHONY: all %-test clean
+.PHONY: all test %-test clean
 
 all:
+
+test: %-test
 
 %-test:
 
