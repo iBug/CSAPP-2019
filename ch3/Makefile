@@ -1,4 +1,4 @@
-CODES := 3.60 3.61 3.62
+CODES := 3.60 3.61 3.62 3.64
 
 PAGER ?= less
 CODES_TEST := $(patsubst %,%-test,${CODES})
