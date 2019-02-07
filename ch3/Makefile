@@ -1,12 +1,22 @@
-CODES := 
+CODES := 3.60 3.61 3.62
 
-.PHONY: all test %-test clean
+PAGER ?= less
+CODES_TEST := $(patsubst %,%-test,${CODES})
 
-all:
+# Codes in this chapter compiles better with exactly -O1
+CFLAGS += -O1
 
-test: %-test
+.PHONY: all test ${CODES_TEST} clean
 
-%-test:
+all: $(patsubst %,%.s,${CODES})
+
+test: all
+
+${CODES_TEST}: %-test: %.s
+	${PAGER} $^
+
+%.s: %.c
+	${CC} ${CFLAGS} -S -o $@ $^
 
 clean:
-	rm -f ${TEST} *.o
+	rm -f ${TEST} *.o *.s
