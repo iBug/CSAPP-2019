@@ -1,4 +1,4 @@
-CODES := 3.60 3.61 3.62 3.64
+CODES := 3.60 3.61 3.62 3.64 3.70
 
 PAGER ?= less
 CODES_TEST := $(patsubst %,%-test,${CODES})
@@ -19,4 +19,4 @@ ${CODES_TEST}: %-test: %.s
 	${CC} ${CFLAGS} -S -o $@ $^
 
 clean:
-	rm -f ${TEST} *.o *.s
+	rm -f *.o *.s
