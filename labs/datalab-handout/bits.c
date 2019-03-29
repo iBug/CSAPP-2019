@@ -27,7 +27,7 @@ INTEGER CODING RULES:
  
   Replace the "return" statement in each function with one
   or more lines of C code that implements the function. Your code 
-  must conform to the following style:
+must conform to the following style:
  
   int Funct(arg1, arg2, ...) {
       /* brief description of how your implementation works */
@@ -252,7 +252,9 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+  n = 1 + (n ^ 31);
+  int y = (x << n) >> n;
+  return !(x ^ y);
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -263,7 +265,8 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+  int y = (x >> 31) & !!(x & ~((~0) << n));
+  return (x >> n) + y;
 }
 /* 
  * negate - return -x 
@@ -273,7 +276,7 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return 1 + ~x;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
@@ -283,7 +286,7 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return 2;
+  return (~x >> 31) & 1;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -293,7 +296,7 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  return ((1 + x + ~y) >> 31) & 1;
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
