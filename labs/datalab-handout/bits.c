@@ -197,7 +197,7 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-  return (x >> n) & ~(((~0) << 1 ) << (n ^ 0x1F));
+  return (x >> n) & ~(((~0) << 1) << (n ^ 0x1F));
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -219,7 +219,8 @@ int bitCount(int x) {
   x = (x & mask_1) + ((x >> 1) & mask_1);
   x = (x & mask_2) + ((x >> 2) & mask_2);
   x = (x & mask_3) + ((x >> 4) & mask_3);
-  return (x & 0xFF) + ((x >> 8) & 0xFF) + ((x >> 16) & 0xFF) + ((x >> 24) & 0xFF);
+  x += x >> 8;
+  return (x + (x >> 16)) & 0xFF;
 }
 /* 
  * bang - Compute !x without using !
@@ -229,7 +230,8 @@ int bitCount(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+  int y = 1 + ~x; // y = -x
+  return ~((x | y) >> 31) & 1;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -238,7 +240,7 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+  return 1 << 31;
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
