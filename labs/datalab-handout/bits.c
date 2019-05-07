@@ -286,7 +286,7 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return (~x >> 31) & 1;
+  return !!x & (~x >> 31) & 1;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -296,7 +296,7 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return ((1 + x + ~y) >> 31) & 1;
+  return (!(x ^ y) | ((x >> 31) & !(y >> 31)) | (((1 + x + ~y) >> 31))) & !(!(x >> 31) & (y >> 31));
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -306,7 +306,33 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int ilog2(int x) {
-  return 2;
+  int mask_1 = (~0) << 16; // 0xFFFF0000
+  int mask_2 = mask_1 ^ (mask_1 >> 8) ^ (mask_1 << 8); // 0xFF00FF00
+  int mask_3 = mask_2 ^ (mask_2 >> 4) ^ (mask_1 << 12); // 0xF0F0F0F0
+  int mask_4 = mask_3 ^ (mask_3 >> 2) ^ (mask_1 << 14); // 0xCCCCCCCC
+  int mask_5 = mask_4 ^ (mask_4 >> 1) ^ (mask_1 << 15); // 0xAAAAAAAA
+
+  int r = 0, m = ~0, t = 0;
+  t = !!(x & m & mask_1);
+  r += t << 4;
+  m &= mask_1 ^ ~((t << 31) >> 31);
+
+  t = !!(x & m & mask_2);
+  r += t << 3;
+  m &= mask_2 ^ ~((t << 31) >> 31);
+
+  t = !!(x & m & mask_3);
+  r += t << 2;
+  m &= mask_3 ^ ~((t << 31) >> 31);
+
+  t = !!(x & m & mask_4);
+  r += t << 1;
+  m &= mask_4 ^ ~((t << 31) >> 31);
+
+  t = !!(x & m & mask_5);
+  r += t << 0;
+  m &= mask_5 ^ ~((t << 31) >> 31);
+  return r;
 }
 /* 
  * float_neg - Return bit-level equivalent of expression -f for
@@ -320,7 +346,10 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
- return 2;
+  if ((uf & 0x7F800000) == 0x7F800000 && uf & 0x007FFFFF) {
+      return uf; // NaN
+  }
+  return uf ^ 0x80000000;
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
@@ -332,7 +361,24 @@ unsigned float_neg(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-  return 2;
+  if (x == 0)
+    return 0;
+
+  unsigned sign = x >> 31, abs = sign ? -x : x, exp = 158;
+  while ((abs & 0x80000000) == 0) {
+    abs <<= 1;
+    exp -= 1;
+  }
+  unsigned frac = (abs >> 8) & 0x7FFFFF;
+  // Round up
+  if (((abs & 0xFF) > 0x80) || (abs & 0x180) == 0x180) {
+    frac += 1;
+    if (frac > 0x7FFFFF) {
+      exp += 1;
+      frac = (frac & 0x7FFFFF) >> 1;
+    }
+  }
+  return (sign << 31) | (exp << 23) | frac;
 }
 /* 
  * float_twice - Return bit-level equivalent of expression 2*f for
@@ -346,5 +392,19 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 unsigned float_twice(unsigned uf) {
-  return 2;
+  unsigned sign = uf >> 31, exp = (uf >> 23) & 0xFF, frac = uf & 0x7FFFFF;
+  if (exp == 0) { // Denormalized
+    frac *= 2;
+    if (frac > 0x7FFFFF) { // Overflow
+      exp = 1;
+      frac &= 0x7FFFFF;
+    }
+  } else if (exp < 0xFE) {
+    exp += 1;
+  } else if (exp == 0xFE) { // Going to overflow
+    return (sign << 31) | 0x7F800000;
+  } else { // Inf or NaN
+    return uf;
+  }
+  return (sign << 31) | (exp << 23) | frac;
 }
