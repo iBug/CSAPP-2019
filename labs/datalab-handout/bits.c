@@ -209,7 +209,7 @@ int logicalShift(int x, int n) {
 int bitCount(int x) {
   /* This is an interesting approach */
   int t;
-  t |= 0x55 | (0x55 << 8);
+  t = 0x55 | (0x55 << 8);
   int mask_1 = t | (t << 16); // Mask 1 = 0x55555555
   t = 0x33 | (0x33 << 8);
   int mask_2 = t | (t << 16); // Mask 2 = 0x33333333
