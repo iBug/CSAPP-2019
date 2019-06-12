@@ -161,7 +161,39 @@ int main(int argc, char **argv) {
  * when we type ctrl-c (ctrl-z) at the keyboard.  
  */
 void eval(char *cmdline) {
-    return;
+    static char *argv[MAXARGS], buf[MAXLINE];
+    int bg = parseline(cmdline, argv);  // BG job?
+
+    strcpy(buf, cmdline);
+    bg = parseline(buf, argv);
+
+    if (!argv[0])  // Empty command
+        return;
+    if (builtin_cmd(argv))  // Is a builtin
+        return;
+
+    pid_t pid;
+    sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
+    pid = fork();
+    if (pid == 0) {  // Child
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+        setpgid(0, 0);  // Spawn in a new process group
+        execvp(argv[0], argv);
+        fprintf(stderr, "%s: command not found\n", argv[0]);
+        exit(127);
+    }
+    addjob(jobs, pid, bg ? BG : FG, cmdline);  // Register jobs
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
+
+    if (bg) {
+        printf("[%d] (%d) %s\n", pid2jid(pid), pid, cmdline);
+    } else {
+        waitfg(pid);
+    }
 }
 
 /* 
