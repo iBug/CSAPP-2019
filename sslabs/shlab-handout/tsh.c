@@ -255,6 +255,18 @@ int parseline(const char *cmdline, char **argv) {
  *    it immediately.  
  */
 int builtin_cmd(char **argv) {
+    if (!strcmp(*argv, "exit"))
+        exit(0);
+    if (!strcmp(*argv, "&"))
+        return 1;
+    if (!strcmp(*argv, "bg") || !strcmp(*argv, "fg")) {
+        do_bgfg(argv);
+        return 1;
+    }
+    if (!strcmp(argv[0], "jobs")) {
+        listjobs(jobs);
+        return 1;
+    }
     return 0; /* not a builtin command */
 }
 
@@ -262,6 +274,42 @@ int builtin_cmd(char **argv) {
  * do_bgfg - Execute the builtin bg and fg commands
  */
 void do_bgfg(char **argv) {
+    pid_t pid;
+    struct job_t *job;
+    char *id = argv[1];
+
+    if (!id) { // NULL?
+        fprintf(stderr, "%s: Argument required\n", argv[0]);
+        return;
+    }
+    if (id[0] == '%') { // %# = job id
+        int jid = atoi(id + 1);
+        job = getjobjid(jobs, jid);
+        if (!job) {
+            fprintf(stderr, "%%%d: No such job\n", jid);
+            return;
+        }
+    } else if ('0' <= id[0] && id[0] <= '9') { // # = pid
+        pid = atoi(id);
+        job = getjobpid(jobs, pid);
+        if (!job) {
+            fprintf(stderr, "%d: No such process\n", jid);
+            return;
+        }
+    } else {
+        fprintf(stderr, "Invalid job specification");
+        return;
+    }
+
+    kill(-(job->pid), SIGCONT); // continue job
+
+    if (!strcmp(argv[0], "fg")) {
+        job->state = FG;
+        waitfg(job->pid);
+    } else {
+        job->state = BG;
+        printf("[%d] (%d) %s\n", job->jid, job->pid, job->cmdline);
+    }
     return;
 }
 
