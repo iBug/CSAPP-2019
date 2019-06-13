@@ -278,18 +278,18 @@ void do_bgfg(char **argv) {
     struct job_t *job;
     char *id = argv[1];
 
-    if (!id) { // NULL?
+    if (!id) {  // NULL?
         fprintf(stderr, "%s: Argument required\n", argv[0]);
         return;
     }
-    if (id[0] == '%') { // %# = job id
+    if (id[0] == '%') {  // %# = job id
         int jid = atoi(id + 1);
         job = getjobjid(jobs, jid);
         if (!job) {
             fprintf(stderr, "%%%d: No such job\n", jid);
             return;
         }
-    } else if ('0' <= id[0] && id[0] <= '9') { // # = pid
+    } else if ('0' <= id[0] && id[0] <= '9') {  // # = pid
         pid = atoi(id);
         job = getjobpid(jobs, pid);
         if (!job) {
@@ -301,7 +301,7 @@ void do_bgfg(char **argv) {
         return;
     }
 
-    kill(-(job->pid), SIGCONT); // continue job
+    kill(-(job->pid), SIGCONT);  // continue job
 
     if (!strcmp(argv[0], "fg")) {
         job->state = FG;
@@ -318,7 +318,7 @@ void do_bgfg(char **argv) {
  */
 void waitfg(pid_t pid) {
     while (fgpid(jobs) == pid)
-        usleep(1000); // sleep for 1ms
+        usleep(1000);  // sleep for 1ms
 }
 
 /*****************
@@ -336,13 +336,13 @@ void sigchld_handler(int sig) {
     pid_t pid;
     int status;
     while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
-        if (WIFEXITED(status)) // normal exit
+        if (WIFEXITED(status))  // normal exit
             deletejob(jobs, pid);
-        if (WIFSIGNALED(status)) { // signal exit
+        if (WIFSIGNALED(status)) {  // signal exit
             fprintf(stderr, "[%d]+ Terminated (signal %d)\n", pid2jid(pid), WTERMSIG(status));
             deletejob(jobs, pid);
         }
-        if (WIFSTOPPED(status)) { // stopped
+        if (WIFSTOPPED(status)) {  // stopped
             fprintf(stderr, "[%d]+ Stopped (signal %d)\n", pid2jid(pid), WTERMSIG(status));
             struct job_t *job = getjobpid(jobs, pid);
             if (job)
@@ -373,7 +373,7 @@ void sigtstp_handler(int sig) {
     pid_t pid = fgpid(jobs);
     if (pid) {
         struct job_t *job = getjobpid(jobs, pid);
-        if (job->state != ST) // don't repeat it
+        if (job->state != ST)  // don't repeat it
             kill(-pid, SIGTSTP);
     }
 }
