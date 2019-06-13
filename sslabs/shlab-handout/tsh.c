@@ -317,7 +317,8 @@ void do_bgfg(char **argv) {
  * waitfg - Block until process pid is no longer the foreground process
  */
 void waitfg(pid_t pid) {
-    return;
+    while (fgpid(jobs) == pid)
+        usleep(1000); // sleep for 1ms
 }
 
 /*****************
@@ -332,7 +333,24 @@ void waitfg(pid_t pid) {
  *     currently running children to terminate.  
  */
 void sigchld_handler(int sig) {
-    return;
+    pid_t pid;
+    int status;
+    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+        if (WIFEXITED(status)) // normal exit
+            deletejob(jobs, pid);
+        if (WIFSIGNALED(status)) { // signal exit
+            fprintf(stderr, "[%d]+ Terminated (signal %d)\n", pid2jid(pid), WTERMSIG(status));
+            deletejob(jobs, pid);
+        }
+        if (WIFSTOPPED(status)) { // stopped
+            fprintf(stderr, "[%d]+ Stopped (signal %d)\n", pid2jid(pid), WTERMSIG(status));
+            struct job_t *job = getjobpid(jobs, pid);
+            if (job)
+                job->state = ST;
+        }
+    }
+    if (errno != ECHILD)
+        perror("waitpid");
 }
 
 /* 
