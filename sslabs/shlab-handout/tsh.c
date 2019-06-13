@@ -255,7 +255,7 @@ int parseline(const char *cmdline, char **argv) {
  *    it immediately.  
  */
 int builtin_cmd(char **argv) {
-    if (!strcmp(*argv, "exit"))
+    if (!strcmp(*argv, "quit"))
         exit(0);
     if (!strcmp(*argv, "&"))
         return 1;
