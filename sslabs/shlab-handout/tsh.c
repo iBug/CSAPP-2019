@@ -293,7 +293,7 @@ void do_bgfg(char **argv) {
         pid = atoi(id);
         job = getjobpid(jobs, pid);
         if (!job) {
-            fprintf(stderr, "%d: No such process\n", jid);
+            fprintf(stderr, "%d: No such process\n", pid);
             return;
         }
     } else {
@@ -359,7 +359,9 @@ void sigchld_handler(int sig) {
  *    to the foreground job.  
  */
 void sigint_handler(int sig) {
-    return;
+    pid_t pid = fgpid(jobs);
+    if (pid)
+        kill(-pid, SIGINT);
 }
 
 /*
@@ -368,7 +370,12 @@ void sigint_handler(int sig) {
  *     foreground job by sending it a SIGTSTP.  
  */
 void sigtstp_handler(int sig) {
-    return;
+    pid_t pid = fgpid(jobs);
+    if (pid) {
+        struct job_t *job = getjobpid(jobs, pid);
+        if (job->state != ST) // don't repeat it
+            kill(-pid, SIGTSTP);
+    }
 }
 
 /*********************
